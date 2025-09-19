@@ -10,6 +10,7 @@ import {
   VARIANTS,
   type TradeCard,
 } from "~/hooks/trade-provider";
+import { getCardDataFromShort } from "~/lib/pokemon";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
@@ -158,7 +159,8 @@ function CardRow({
           placeholder="ng9"
           value={card.id}
           onChange={(e) => {
-            updateCard(party, index, { ...card, id: e.target.value });
+            const name = getCardDataFromShort(e.target.value)?.name;
+            updateCard(party, index, { ...card, id: e.target.value, name });
           }}
         />
       </TableCell>
@@ -222,20 +224,7 @@ function CardRow({
           </SelectContent>
         </Select>
       </TableCell>
-      <TableCell>
-        {card.id ? (
-          <a
-            href={`https://www.cardmarket.com/en/Pokemon/Products/Singles/${card.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            Link
-          </a>
-        ) : (
-          "--"
-        )}
-      </TableCell>
+      <TableCell>{card.name && <CardmarketLink card={card} />}</TableCell>
       <TableCell>
         <Button size="sm" onClick={() => calculatePrice()} disabled={loading}>
           {loading ? (
@@ -247,5 +236,25 @@ function CardRow({
       </TableCell>
       <TableCell>{price ?? "--"}</TableCell>
     </TableRow>
+  );
+}
+
+function CardmarketLink({ card }: { card: TradeCard }) {
+  const cardData = getCardDataFromShort(card.id);
+  if (!cardData) return null;
+
+  const url = `https://www.cardmarket.com/en/Pokemon/Products/Singles/${encodeURIComponent(
+    cardData.set.replaceAll(" ", "-"),
+  )}/${encodeURIComponent(cardData.name.replaceAll(" ", "-"))}-${card.id.toUpperCase()}`;
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:underline"
+    >
+      Link
+    </a>
   );
 }
