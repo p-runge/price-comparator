@@ -56,7 +56,7 @@ function TradeParty({
   party: "you" | "partner";
   cards: TradeCard[];
 }) {
-  const { addCardTo } = useTrade();
+  const { addCard } = useTrade();
 
   return (
     <Card className="px-2">
@@ -79,7 +79,7 @@ function TradeParty({
           </TableHeader>
           <TableBody>
             {cards.map((card, index) => (
-              <CardRow key={index} card={card} />
+              <CardRow key={index} party={party} index={index} card={card} />
             ))}
             {/* plus button row */}
             <TableRow>
@@ -89,7 +89,7 @@ function TradeParty({
                   size="sm"
                   className="w-full"
                   onClick={() => {
-                    addCardTo(party, {
+                    addCard(party, {
                       name: undefined,
                       id: "",
                       variant: VARIANTS[0],
@@ -121,7 +121,15 @@ function TradeParty({
   );
 }
 
-function CardRow({ card }: { card: TradeCard }) {
+function CardRow({
+  party,
+  index,
+  card,
+}: {
+  party: "you" | "partner";
+  index: number;
+  card: TradeCard;
+}) {
   const [price, setPrice] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -139,6 +147,8 @@ function CardRow({ card }: { card: TradeCard }) {
       });
   };
 
+  const { updateCard } = useTrade();
+
   return (
     <TableRow>
       <TableCell>{card.name ?? "--"}</TableCell>
@@ -147,8 +157,8 @@ function CardRow({ card }: { card: TradeCard }) {
           type="text"
           placeholder="ng9"
           value={card.id}
-          onChange={() => {
-            // TODO: Update card name in state
+          onChange={(e) => {
+            updateCard(party, index, { ...card, id: e.target.value });
           }}
         />
       </TableCell>
@@ -163,7 +173,7 @@ function CardRow({ card }: { card: TradeCard }) {
                 key={variant}
                 value={variant}
                 onClick={() => {
-                  // TODO: Update card variant in state
+                  updateCard(party, index, { ...card, variant });
                 }}
               >
                 {variant}
@@ -183,7 +193,7 @@ function CardRow({ card }: { card: TradeCard }) {
                 key={language}
                 value={language}
                 onClick={() => {
-                  // TODO: Update card language in state
+                  updateCard(party, index, { ...card, language });
                 }}
               >
                 {language}
@@ -203,7 +213,7 @@ function CardRow({ card }: { card: TradeCard }) {
                 key={condition}
                 value={condition}
                 onClick={() => {
-                  // TODO: Update card condition in state
+                  updateCard(party, index, { ...card, condition });
                 }}
               >
                 {condition}

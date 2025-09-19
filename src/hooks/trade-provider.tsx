@@ -54,7 +54,8 @@ export type TradeCard = {
 type TradeContextType = {
   trade: Trade;
   setTrade: (trade: Trade) => void;
-  addCardTo: (who: "you" | "partner", card: TradeCard) => void;
+  addCard: (who: "you" | "partner", card: TradeCard) => void;
+  updateCard: (who: "you" | "partner", index: number, card: TradeCard) => void;
 };
 
 const TradeContext = createContext<TradeContextType | undefined>(undefined);
@@ -65,7 +66,7 @@ export const TradeProvider = ({ children }: { children: ReactNode }) => {
     partnerCards: [],
   });
 
-  const addCardTo = (who: "you" | "partner", card: TradeCard) => {
+  const addCard = (who: "you" | "partner", card: TradeCard) => {
     setTrade((prev) => {
       let yourCards: TradeCard[] = prev?.yourCards ?? [];
       let partnerCards: TradeCard[] = prev?.partnerCards ?? [];
@@ -80,8 +81,27 @@ export const TradeProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const updateCard = (
+    who: "you" | "partner",
+    index: number,
+    card: TradeCard,
+  ) => {
+    setTrade((prev) => {
+      const yourCards: TradeCard[] = prev?.yourCards ?? [];
+      const partnerCards: TradeCard[] = prev?.partnerCards ?? [];
+
+      if (who === "you") {
+        yourCards[index] = card;
+      } else {
+        partnerCards[index] = card;
+      }
+
+      return { yourCards, partnerCards };
+    });
+  };
+
   return (
-    <TradeContext.Provider value={{ trade, setTrade, addCardTo }}>
+    <TradeContext.Provider value={{ trade, setTrade, addCard, updateCard }}>
       {children}
     </TradeContext.Provider>
   );
