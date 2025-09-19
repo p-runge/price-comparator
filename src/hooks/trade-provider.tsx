@@ -19,29 +19,27 @@ export const VARIANTS = [
 ] as const;
 export type Variant = (typeof VARIANTS)[number];
 
-export const LANGUAGES = [
-  "EN",
-  "DE",
-  "FR",
-  "IT",
-  "ES",
-  "JP",
-  "KR",
-  "CN",
-  "PT",
-] as const;
+export const LANGUAGES = ["1", "2", "3", "4", "5"] as const;
 export type Language = (typeof LANGUAGES)[number];
+export const LanguageLabelMap: Record<Language, string> = {
+  1: "EN",
+  2: "FR",
+  3: "DE",
+  4: "ES",
+  5: "IT",
+};
 
-export const CONDITIONS = [
-  "Mint",
-  "Near Mint",
-  "Excellent",
-  "Good",
-  "Lightly Played",
-  "Played",
-  "Poor",
-] as const;
+export const CONDITIONS = ["1", "2", "3", "4", "5", "6", "7"] as const;
 export type Condition = (typeof CONDITIONS)[number];
+export const ConditionLabelMap: Record<Condition, string> = {
+  1: "Mint",
+  2: "Near Mint",
+  3: "Excellent",
+  4: "Good",
+  5: "Lightly Played",
+  6: "Played",
+  7: "Poor",
+};
 
 export type TradeCard = {
   name?: string;

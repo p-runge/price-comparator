@@ -3,12 +3,17 @@
 import { Calculator, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import {
+  ConditionLabelMap,
   CONDITIONS,
+  LanguageLabelMap,
   LANGUAGES,
   TradeProvider,
   useTrade,
   VARIANTS,
+  type Condition,
+  type Language,
   type TradeCard,
+  type Variant,
 } from "~/hooks/trade-provider";
 import { getCardDataFromShort } from "~/lib/pokemon";
 import { Button } from "./ui/button";
@@ -165,19 +170,17 @@ function CardRow({
         />
       </TableCell>
       <TableCell>
-        <Select>
+        <Select
+          onValueChange={(value: Variant) => {
+            updateCard(party, index, { ...card, variant: value });
+          }}
+        >
           <SelectTrigger>
             <SelectValue placeholder={card.variant} />
           </SelectTrigger>
           <SelectContent>
             {VARIANTS.map((variant) => (
-              <SelectItem
-                key={variant}
-                value={variant}
-                onClick={() => {
-                  updateCard(party, index, { ...card, variant });
-                }}
-              >
+              <SelectItem key={variant} value={variant}>
                 {variant}
               </SelectItem>
             ))}
@@ -185,40 +188,36 @@ function CardRow({
         </Select>
       </TableCell>
       <TableCell>
-        <Select>
+        <Select
+          onValueChange={(value: Language) => {
+            updateCard(party, index, { ...card, language: value });
+          }}
+        >
           <SelectTrigger>
-            <SelectValue placeholder={card.language} />
+            <SelectValue placeholder={LanguageLabelMap[card.language]} />
           </SelectTrigger>
           <SelectContent>
             {LANGUAGES.map((language) => (
-              <SelectItem
-                key={language}
-                value={language}
-                onClick={() => {
-                  updateCard(party, index, { ...card, language });
-                }}
-              >
-                {language}
+              <SelectItem key={language} value={language}>
+                {LanguageLabelMap[language]}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </TableCell>
       <TableCell>
-        <Select>
+        <Select
+          onValueChange={(value: Condition) => {
+            updateCard(party, index, { ...card, condition: value });
+          }}
+        >
           <SelectTrigger>
-            <SelectValue placeholder={card.condition} />
+            <SelectValue placeholder={ConditionLabelMap[card.condition]} />
           </SelectTrigger>
           <SelectContent>
             {CONDITIONS.map((condition) => (
-              <SelectItem
-                key={condition}
-                value={condition}
-                onClick={() => {
-                  updateCard(party, index, { ...card, condition });
-                }}
-              >
-                {condition}
+              <SelectItem key={condition} value={condition}>
+                {ConditionLabelMap[condition]}
               </SelectItem>
             ))}
           </SelectContent>
@@ -243,13 +242,24 @@ function CardmarketLink({ card }: { card: TradeCard }) {
   const cardData = getCardDataFromShort(card.id);
   if (!cardData) return null;
 
-  const url = `https://www.cardmarket.com/en/Pokemon/Products/Singles/${encodeURIComponent(
-    cardData.set.replaceAll(" ", "-"),
-  )}/${encodeURIComponent(cardData.name.replaceAll(" ", "-"))}-${card.id.toUpperCase()}`;
+  const url = new URL("https://www.cardmarket.com/en/Pokemon/Products/Singles");
+  url.pathname += `/${cardData.set.replaceAll(" ", "-")}/${cardData.name.replaceAll(
+    " ",
+    "-",
+  )}-${card.id.toUpperCase()}`;
+  url.searchParams.append("language", card.language);
+  if (card.condition !== "7") {
+    url.searchParams.append("minCondition", card.condition);
+  }
+  if (card.variant === "1st Edition") {
+    url.searchParams.append("isFirstEd", "Y");
+  } else if (card.variant === "Unlimited") {
+    url.searchParams.append("isFirstEd", "N");
+  }
 
   return (
     <a
-      href={url}
+      href={url.toString()}
       target="_blank"
       rel="noopener noreferrer"
       className="text-blue-600 hover:underline"
