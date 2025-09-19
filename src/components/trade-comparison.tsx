@@ -13,32 +13,57 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+import { Input } from "./ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 type Trade = {
   yourCards: Card[];
   partnerCards: Card[];
 };
 
-type Variant =
-  | "Unlimited"
-  | "1st Edition"
-  | "Limited Edition"
-  | "Shadowless"
-  | "Holo"
-  | "Reverse Holo"
-  | "Promo"
-  | "Full Art"
-  | "Secret Rare"
-  | "Gold Rare";
-type Language = "EN" | "DE" | "FR" | "IT" | "ES" | "JP" | "KR" | "CN" | "PT";
-type Condition =
-  | "Mint"
-  | "Near Mint"
-  | "Excellent"
-  | "Good"
-  | "Lightly Played"
-  | "Played"
-  | "Poor";
+const VARIANTS = [
+  "Unlimited",
+  "1st Edition",
+  "Limited Edition",
+  "Shadowless",
+  "Holo",
+  "Reverse Holo",
+  "Promo",
+  "Full Art",
+  "Secret Rare",
+  "Gold Rare",
+] as const;
+type Variant = (typeof VARIANTS)[number];
+
+const LANGUAGES = [
+  "EN",
+  "DE",
+  "FR",
+  "IT",
+  "ES",
+  "JP",
+  "KR",
+  "CN",
+  "PT",
+] as const;
+type Language = (typeof LANGUAGES)[number];
+
+const CONDITIONS = [
+  "Mint",
+  "Near Mint",
+  "Excellent",
+  "Good",
+  "Lightly Played",
+  "Played",
+  "Poor",
+] as const;
+type Condition = (typeof CONDITIONS)[number];
 
 type Card = {
   name?: string; // e.g. "Clefable (Jungle)" or "Lugia (Neo Genesis)"
@@ -136,11 +161,77 @@ function CardRow({ card }: { card: Card }) {
 
   return (
     <TableRow>
-      <TableCell>{card.name}</TableCell>
-      <TableCell>{card.id}</TableCell>
-      <TableCell>{card.variant}</TableCell>
-      <TableCell>{card.language}</TableCell>
-      <TableCell>{card.condition}</TableCell>
+      <TableCell>{card.name ?? "--"}</TableCell>
+      <TableCell>
+        <Input
+          type="text"
+          placeholder="ng9"
+          value={card.id}
+          onChange={() => {
+            // TODO: Update card name in state
+          }}
+        />
+      </TableCell>
+      <TableCell>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder={card.variant} />
+          </SelectTrigger>
+          <SelectContent>
+            {VARIANTS.map((variant) => (
+              <SelectItem
+                key={variant}
+                value={variant}
+                onClick={() => {
+                  // TODO: Update card variant in state
+                }}
+              >
+                {variant}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </TableCell>
+      <TableCell>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder={card.language} />
+          </SelectTrigger>
+          <SelectContent>
+            {LANGUAGES.map((language) => (
+              <SelectItem
+                key={language}
+                value={language}
+                onClick={() => {
+                  // TODO: Update card language in state
+                }}
+              >
+                {language}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </TableCell>
+      <TableCell>
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder={card.condition} />
+          </SelectTrigger>
+          <SelectContent>
+            {CONDITIONS.map((condition) => (
+              <SelectItem
+                key={condition}
+                value={condition}
+                onClick={() => {
+                  // TODO: Update card condition in state
+                }}
+              >
+                {condition}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </TableCell>
       <TableCell>
         <Button size="sm" onClick={() => calculatePrice()} disabled={loading}>
           {loading ? (
