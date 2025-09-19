@@ -2,8 +2,24 @@
 
 import { Calculator, Loader2 } from "lucide-react";
 import { useState } from "react";
+import {
+  CONDITIONS,
+  LANGUAGES,
+  TradeProvider,
+  useTrade,
+  VARIANTS,
+  type TradeCard,
+} from "~/hooks/trade-provider";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardTitle } from "./ui/card";
+import { Input } from "./ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import {
   Table,
   TableBody,
@@ -13,86 +29,18 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import { Input } from "./ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-
-type Trade = {
-  yourCards: Card[];
-  partnerCards: Card[];
-};
-
-const VARIANTS = [
-  "Unlimited",
-  "1st Edition",
-  "Limited Edition",
-  "Shadowless",
-  "Holo",
-  "Reverse Holo",
-  "Promo",
-  "Full Art",
-  "Secret Rare",
-  "Gold Rare",
-] as const;
-type Variant = (typeof VARIANTS)[number];
-
-const LANGUAGES = [
-  "EN",
-  "DE",
-  "FR",
-  "IT",
-  "ES",
-  "JP",
-  "KR",
-  "CN",
-  "PT",
-] as const;
-type Language = (typeof LANGUAGES)[number];
-
-const CONDITIONS = [
-  "Mint",
-  "Near Mint",
-  "Excellent",
-  "Good",
-  "Lightly Played",
-  "Played",
-  "Poor",
-] as const;
-type Condition = (typeof CONDITIONS)[number];
-
-type Card = {
-  name?: string; // e.g. "Clefable (Jungle)" or "Lugia (Neo Genesis)"
-  id: string; // e.g. "ju1" for "Clefable" from "Jungle" or "ng9" for "Lugia" from "Neo Genesis"
-  variant: Variant;
-  language: Language;
-  condition: Condition;
-};
-
-const trade: Trade = {
-  yourCards: [
-    {
-      id: "ju54",
-      variant: "Holo",
-      language: "EN",
-      condition: "Near Mint",
-    },
-  ],
-  partnerCards: [
-    {
-      id: "ng9",
-      variant: "Reverse Holo",
-      language: "DE",
-      condition: "Lightly Played",
-    },
-  ],
-};
 
 export default function TradeComparison() {
+  return (
+    <TradeProvider>
+      <TradeComparisonContent />
+    </TradeProvider>
+  );
+}
+
+export function TradeComparisonContent() {
+  const { trade } = useTrade();
+
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       <TradeParty title="Your Cards" cards={trade.yourCards} />
@@ -101,7 +49,7 @@ export default function TradeComparison() {
   );
 }
 
-function TradeParty({ title, cards }: { title: string; cards: Card[] }) {
+function TradeParty({ title, cards }: { title: string; cards: TradeCard[] }) {
   return (
     <Card className="px-2">
       <CardTitle>{title}</CardTitle>
@@ -141,7 +89,7 @@ function TradeParty({ title, cards }: { title: string; cards: Card[] }) {
   );
 }
 
-function CardRow({ card }: { card: Card }) {
+function CardRow({ card }: { card: TradeCard }) {
   const [price, setPrice] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
