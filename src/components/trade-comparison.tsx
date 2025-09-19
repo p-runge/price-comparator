@@ -100,7 +100,7 @@ function TradeParty({
                       id: "",
                       variant: VARIANTS[0],
                       language: LANGUAGES[0],
-                      condition: CONDITIONS[0],
+                      condition: CONDITIONS[1],
                     });
                   }}
                 >
@@ -171,6 +171,7 @@ function CardRow({
       </TableCell>
       <TableCell>
         <Select
+          defaultValue={card.variant}
           onValueChange={(value: Variant) => {
             updateCard(party, index, { ...card, variant: value });
           }}
@@ -189,6 +190,7 @@ function CardRow({
       </TableCell>
       <TableCell>
         <Select
+          defaultValue={card.language}
           onValueChange={(value: Language) => {
             updateCard(party, index, { ...card, language: value });
           }}
@@ -207,6 +209,7 @@ function CardRow({
       </TableCell>
       <TableCell>
         <Select
+          defaultValue={card.condition}
           onValueChange={(value: Condition) => {
             updateCard(party, index, { ...card, condition: value });
           }}
@@ -253,8 +256,11 @@ function CardmarketLink({ card }: { card: TradeCard }) {
   }
   if (card.variant === "1st Edition") {
     url.searchParams.append("isFirstEd", "Y");
+  } else if (card.variant === "Reverse Holo") {
+    url.searchParams.append("isReverseHolo", "Y");
   } else if (card.variant === "Unlimited") {
     url.searchParams.append("isFirstEd", "N");
+    url.searchParams.append("isReverseHolo", "Y");
   }
 
   return (
