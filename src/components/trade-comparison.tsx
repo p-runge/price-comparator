@@ -1,6 +1,6 @@
 "use client";
 
-import { Calculator, Loader2 } from "lucide-react";
+import { Calculator, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import {
   CONDITIONS,
@@ -43,16 +43,26 @@ export function TradeComparisonContent() {
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <TradeParty title="Your Cards" cards={trade.yourCards} />
-      <TradeParty title="Partner's Cards" cards={trade.partnerCards} />
+      <TradeParty party="you" cards={trade.yourCards} />
+      <TradeParty party="partner" cards={trade.partnerCards} />
     </div>
   );
 }
 
-function TradeParty({ title, cards }: { title: string; cards: TradeCard[] }) {
+function TradeParty({
+  party,
+  cards,
+}: {
+  party: "you" | "partner";
+  cards: TradeCard[];
+}) {
+  const { addCardTo } = useTrade();
+
   return (
     <Card className="px-2">
-      <CardTitle>{title}</CardTitle>
+      <CardTitle>
+        {party === "you" ? "Your Cards" : "Partner's Cards"}
+      </CardTitle>
       <CardContent>
         <Table>
           <TableHeader>
@@ -70,6 +80,27 @@ function TradeParty({ title, cards }: { title: string; cards: TradeCard[] }) {
             {cards.map((card, index) => (
               <CardRow key={index} card={card} />
             ))}
+            {/* plus button row */}
+            <TableRow>
+              <TableCell colSpan={7} className="text-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    addCardTo(party, {
+                      name: undefined,
+                      id: "",
+                      variant: VARIANTS[0],
+                      language: LANGUAGES[0],
+                      condition: CONDITIONS[0],
+                    });
+                  }}
+                >
+                  <Plus /> Add Card
+                </Button>
+              </TableCell>
+            </TableRow>
           </TableBody>
           <TableFooter>
             <TableRow>
