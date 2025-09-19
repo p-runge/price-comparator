@@ -42,7 +42,6 @@ export const ConditionLabelMap: Record<Condition, string> = {
 };
 
 export type TradeCard = {
-  name?: string;
   id: string;
   variant: Variant;
   language: Language;

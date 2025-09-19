@@ -15,10 +15,10 @@ import {
   type TradeCard,
   type Variant,
 } from "~/hooks/trade-provider";
-import { getCardDataFromShort } from "~/lib/pokemon";
+import { getCardDataFromShort, POKEMON_MAP } from "~/lib/pokemon";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardTitle } from "./ui/card";
-import { Input } from "./ui/input";
+import { Combobox } from "./ui/combobox";
 import {
   Select,
   SelectContent,
@@ -96,7 +96,6 @@ function TradeParty({
                   className="w-full"
                   onClick={() => {
                     addCard(party, {
-                      name: undefined,
                       id: "",
                       variant: VARIANTS[0],
                       language: LANGUAGES[0],
@@ -126,6 +125,12 @@ function TradeParty({
     </Card>
   );
 }
+
+// Prepare options for Combobox
+const cardOptions = Object.entries(POKEMON_MAP).map(([id, data]) => ({
+  value: id,
+  label: `${data.name} (${data.set})`,
+}));
 
 function CardRow({
   party,
@@ -157,15 +162,16 @@ function CardRow({
 
   return (
     <TableRow>
-      <TableCell>{card.name ?? "--"}</TableCell>
       <TableCell>
-        <Input
-          type="text"
-          placeholder="ng9"
-          value={card.id}
-          onChange={(e) => {
-            const name = getCardDataFromShort(e.target.value)?.name;
-            updateCard(party, index, { ...card, id: e.target.value, name });
+        <Combobox
+          placeholder="Select a card"
+          emptyText="No card found"
+          options={cardOptions}
+          onSelect={(option) => {
+            updateCard(party, index, {
+              ...card,
+              id: option.value,
+            });
           }}
         />
       </TableCell>
@@ -226,7 +232,7 @@ function CardRow({
           </SelectContent>
         </Select>
       </TableCell>
-      <TableCell>{card.name && <CardmarketLink card={card} />}</TableCell>
+      <TableCell>{card.id && <CardmarketLink card={card} />}</TableCell>
       <TableCell>
         <Button size="sm" onClick={() => calculatePrice()} disabled={loading}>
           {loading ? (
