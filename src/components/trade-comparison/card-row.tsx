@@ -30,7 +30,7 @@ import CardmarketLink from "./cardmarket-link";
 // Prepare options for Combobox
 const cardOptions = Object.entries(POKEMON_MAP).map(([id, data]) => ({
   value: id,
-  label: `${data.name} (${data.set})`,
+  label: `[${id.toUpperCase()}] ${data.name} – ${data.set}`,
 }));
 
 export default function CardRow({
