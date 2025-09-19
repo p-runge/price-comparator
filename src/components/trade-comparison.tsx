@@ -72,6 +72,7 @@ function TradeParty({
               <TableHead>Variant</TableHead>
               <TableHead>Language</TableHead>
               <TableHead>Condition</TableHead>
+              <TableHead>CM Link</TableHead>
               <TableHead>Calculate</TableHead>
               <TableHead>Value</TableHead>
             </TableRow>
@@ -210,6 +211,20 @@ function CardRow({ card }: { card: TradeCard }) {
             ))}
           </SelectContent>
         </Select>
+      </TableCell>
+      <TableCell>
+        {card.id ? (
+          <a
+            href={`https://www.cardmarket.com/en/Pokemon/Products/Singles/${card.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
+          >
+            Link
+          </a>
+        ) : (
+          "--"
+        )}
       </TableCell>
       <TableCell>
         <Button size="sm" onClick={() => calculatePrice()} disabled={loading}>
