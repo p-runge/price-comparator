@@ -8,5 +8,18 @@ export function getCardDataFromShort(short: string) {
 }
 
 export const POKEMON_MAP: Record<string, { set: string; name: string }> = {
-  ng9: { set: "Neo Genesis", name: "Lugia" },
+  // ng9: { set: "Neo Genesis", name: "Lugia" },
 };
+
+const res = await fetch("/cards.json");
+const cards = (await res.json()) as Array<{
+  short: string;
+  setName: string;
+  cardName: string;
+}>;
+for (const card of cards) {
+  POKEMON_MAP[card.short.toLowerCase()] = {
+    set: card.setName,
+    name: card.cardName,
+  };
+}

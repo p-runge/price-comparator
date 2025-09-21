@@ -1,8 +1,9 @@
 "use client";
 
 import { Check, ChevronsUpDown } from "lucide-react";
-import * as React from "react";
 
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Command,
@@ -37,8 +38,14 @@ export function Combobox({
   emptyText = "No option found.",
   onSelect,
 }: ComboboxProps) {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const [inputValue, setInputValue] = useState("");
+
+  // Filter options based on input value
+  const filteredOptions = options.filter((option) =>
+    option.label.toLowerCase().includes(inputValue.toLowerCase()),
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -57,19 +64,87 @@ export function Combobox({
       </PopoverTrigger>
       <PopoverContent className="w-[250px] p-0">
         <Command>
-          <CommandInput placeholder={`Search...`} className="h-9" />
+          <CommandInput
+            placeholder={`Search...`}
+            className="h-9"
+            value={inputValue}
+            onValueChange={setInputValue}
+          />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
+            <ScrollableList
+              options={filteredOptions}
+              value={value}
+              onSelect={(option) => {
+                onSelect(option);
+                setOpen(false);
+                setValue(option.value);
+              }}
+            />
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function ScrollableList({
+  options,
+  value,
+  onSelect,
+}: {
+  options: ComboboxOption[];
+  value: string;
+  onSelect: (option: ComboboxOption) => void;
+}) {
+  const parentRef = useRef<HTMLDivElement>(null);
+  const rowVirtualizer = useVirtualizer({
+    count: 10,
+    // count: options.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 40, // px per row, adjust as needed
+    overscan: 5,
+  });
+
+  return (
+    <CommandGroup
+      ref={parentRef}
+      style={{
+        maxHeight: "300px", // max height for scroll
+        overflow: "auto",
+      }}
+    >
+      <div
+        style={{
+          height: `${rowVirtualizer.getTotalSize()}px`,
+          position: "relative",
+        }}
+      >
+        {rowVirtualizer
+          .getVirtualItems()
+          .map((virtualRow: { index: number; size: number; start: number }) => {
+            const option = options[virtualRow.index];
+            if (!option) return null;
+
+            return (
+              <div
+                key={option.value}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: `${virtualRow.size}px`,
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+              >
                 <CommandItem
-                  key={option.value}
                   value={option.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                    onSelect(currentValue === value ? "" : currentValue);
                     onSelect(option);
-                    setOpen(false);
                   }}
+                  className="h-full w-full"
                 >
                   {option.label}
                   <Check
@@ -79,11 +154,10 @@ export function Combobox({
                     )}
                   />
                 </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+              </div>
+            );
+          })}
+      </div>
+    </CommandGroup>
   );
 }
