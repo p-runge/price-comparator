@@ -64,13 +64,11 @@ export default function CardRow({
     <TableRow>
       <TableCell>
         <Combobox
-          placeholder="Select a card"
-          emptyText="No card found"
           options={cardOptions}
-          onSelect={(option) => {
+          onSelect={(value) => {
             updateCard(party, index, {
               ...card,
-              id: option.value,
+              id: value,
             });
           }}
         />

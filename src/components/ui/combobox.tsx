@@ -27,25 +27,12 @@ export type ComboboxOption = {
 
 type ComboboxProps = {
   options: ComboboxOption[];
-  placeholder?: string;
-  emptyText?: string;
-  onSelect: (option: ComboboxOption) => void;
+  onSelect: (option: string) => void;
 };
 
-export function Combobox({
-  options,
-  placeholder = "Select option...",
-  emptyText = "No option found.",
-  onSelect,
-}: ComboboxProps) {
+export function Combobox({ options, onSelect }: ComboboxProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
-  const [inputValue, setInputValue] = useState("");
-
-  // Filter options based on input value
-  const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(inputValue.toLowerCase()),
-  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -58,31 +45,20 @@ export function Combobox({
         >
           {value
             ? options.find((option) => option.value === value)?.label
-            : placeholder}
+            : "Select a card"}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[250px] p-0">
-        <Command>
-          <CommandInput
-            placeholder={`Search...`}
-            className="h-9"
-            value={inputValue}
-            onValueChange={setInputValue}
-          />
-          <CommandList>
-            <CommandEmpty>{emptyText}</CommandEmpty>
-            <ScrollableList
-              options={filteredOptions}
-              value={value}
-              onSelect={(option) => {
-                onSelect(option);
-                setOpen(false);
-                setValue(option.value);
-              }}
-            />
-          </CommandList>
-        </Command>
+        <ScrollableList
+          options={options}
+          value={value}
+          onSelect={(value) => {
+            onSelect(value);
+            setOpen(false);
+            setValue(value);
+          }}
+        />
       </PopoverContent>
     </Popover>
   );
@@ -95,68 +71,104 @@ function ScrollableList({
 }: {
   options: ComboboxOption[];
   value: string;
-  onSelect: (option: ComboboxOption) => void;
+  onSelect: (option: string) => void;
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   const rowVirtualizer = useVirtualizer({
     count: options.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 40, // px per row, adjust as needed
-    overscan: 5,
   });
 
-  return (
-    <CommandGroup
-      ref={parentRef}
-      style={{
-        maxHeight: "300px", // max height for scroll
-        overflow: "auto",
-      }}
-    >
-      <div
-        style={{
-          height: `${rowVirtualizer.getTotalSize()}px`,
-          position: "relative",
-        }}
-      >
-        {rowVirtualizer
-          .getVirtualItems()
-          .map((virtualRow: { index: number; size: number; start: number }) => {
-            const option = options[virtualRow.index];
-            if (!option) return null;
+  const [searchValue, setSearchValue] = useState("");
 
-            return (
-              <div
-                key={option.value}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-              >
-                <CommandItem
-                  value={option.value}
-                  onSelect={(currentValue) => {
-                    onSelect(currentValue === value ? "" : currentValue);
-                    onSelect(option);
-                  }}
-                  className="h-full w-full"
-                >
-                  {option.label}
-                  <Check
-                    className={cn(
-                      "ml-auto",
-                      value === option.value ? "opacity-100" : "opacity-0",
-                    )}
-                  />
-                </CommandItem>
-              </div>
-            );
-          })}
-      </div>
-    </CommandGroup>
+  // Filter options based on input value
+  const filteredOptions = options.filter((option) =>
+    option.label.toLowerCase().includes(searchValue.toLowerCase()),
+  );
+  // console.log("filteredOptions", filteredOptions);
+
+  return (
+    <Command shouldFilter={false}>
+      <CommandInput
+        placeholder={`Search...`}
+        className="h-9"
+        value={searchValue}
+        onValueChange={setSearchValue}
+      />
+      <CommandList>
+        <CommandEmpty>No card found</CommandEmpty>
+        <CommandGroup
+          ref={parentRef}
+          style={{
+            maxHeight: "300px", // max height for scroll
+            overflow: "auto",
+          }}
+        >
+          <div
+            style={{
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              position: "relative",
+            }}
+          >
+            {/* eslint-disable-next-line @typescript-eslint/no-unsafe-call */}
+            {rowVirtualizer
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+              .getVirtualItems()
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+              .map(
+                (virtualRow: {
+                  index: number;
+                  size: number;
+                  start: number;
+                }) => {
+                  const option = filteredOptions[virtualRow.index];
+                  if (!option) return null;
+
+                  return (
+                    <div
+                      key={option.value}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: `${virtualRow.size}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                    >
+                      <CommandItem
+                        // value={option.value}
+                        onSelect={(currentValue) => {
+                          onSelect(currentValue === value ? "" : currentValue);
+                          onSelect(currentValue);
+                        }}
+                        className={cn(
+                          "h-full w-full",
+                          virtualRow.index % 2 === 0
+                            ? "bg-muted"
+                            : "bg-background",
+                        )}
+                      >
+                        {option.label}
+                        <Check
+                          className={cn(
+                            "ml-auto",
+                            value === option.value
+                              ? "opacity-100"
+                              : "opacity-0",
+                          )}
+                        />
+                      </CommandItem>
+                    </div>
+                  );
+                },
+              )}
+          </div>
+        </CommandGroup>
+      </CommandList>
+    </Command>
   );
 }
