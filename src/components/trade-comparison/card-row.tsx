@@ -65,10 +65,10 @@ export default function CardRow({
       <TableCell>
         <Combobox
           options={cardOptions}
-          onSelect={(value) => {
+          onSelect={(option) => {
             updateCard(party, index, {
               ...card,
-              id: value,
+              id: option.value,
             });
           }}
         />

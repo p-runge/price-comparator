@@ -27,7 +27,7 @@ export type ComboboxOption = {
 
 type ComboboxProps = {
   options: ComboboxOption[];
-  onSelect: (option: string) => void;
+  onSelect: (option: ComboboxOption) => void;
 };
 
 export function Combobox({ options, onSelect }: ComboboxProps) {
@@ -53,10 +53,10 @@ export function Combobox({ options, onSelect }: ComboboxProps) {
         <ScrollableList
           options={options}
           value={value}
-          onSelect={(value) => {
-            onSelect(value);
+          onSelect={(option) => {
+            onSelect(option);
             setOpen(false);
-            setValue(value);
+            setValue(option.value);
           }}
         />
       </PopoverContent>
@@ -71,10 +71,9 @@ function ScrollableList({
 }: {
   options: ComboboxOption[];
   value: string;
-  onSelect: (option: string) => void;
+  onSelect: (option: ComboboxOption) => void;
 }) {
   const [searchValue, setSearchValue] = useState("");
-  // Filter options based on input value
   const filteredOptions = options.filter((option) =>
     option.label.toLowerCase().includes(searchValue.toLowerCase()),
   );
@@ -97,18 +96,12 @@ function ScrollableList({
       />
       <CommandList>
         <CommandEmpty>No card found</CommandEmpty>
-        <CommandGroup
-          ref={parentRef}
-          style={{
-            maxHeight: "300px", // max height for scroll
-            overflow: "auto",
-          }}
-        >
+        <CommandGroup ref={parentRef} className="max-h-[300px] overflow-auto">
           <div
+            className="relative"
             style={{
               // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
               height: `${rowVirtualizer.getTotalSize()}px`,
-              position: "relative",
             }}
           >
             {/* eslint-disable-next-line @typescript-eslint/no-unsafe-call */}
@@ -128,20 +121,20 @@ function ScrollableList({
                   return (
                     <div
                       key={option.value}
+                      className="absolute top-0 left-0 w-full"
                       style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
                         height: `${virtualRow.size}px`,
                         transform: `translateY(${virtualRow.start}px)`,
                       }}
                     >
                       <CommandItem
-                        // value={option.value}
                         onSelect={(currentValue) => {
-                          onSelect(currentValue === value ? "" : currentValue);
-                          onSelect(currentValue);
+                          const option = filteredOptions.find(
+                            (opt) => opt.label === currentValue,
+                          );
+                          if (!option) return;
+
+                          onSelect(option);
                         }}
                         className={cn(
                           "h-full w-full",
