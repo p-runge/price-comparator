@@ -73,21 +73,19 @@ function ScrollableList({
   value: string;
   onSelect: (option: string) => void;
 }) {
-  const parentRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-  const rowVirtualizer = useVirtualizer({
-    count: options.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 40, // px per row, adjust as needed
-  });
-
   const [searchValue, setSearchValue] = useState("");
-
   // Filter options based on input value
   const filteredOptions = options.filter((option) =>
     option.label.toLowerCase().includes(searchValue.toLowerCase()),
   );
-  // console.log("filteredOptions", filteredOptions);
+
+  const parentRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+  const rowVirtualizer = useVirtualizer({
+    count: filteredOptions.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 40, // px per row
+  });
 
   return (
     <Command shouldFilter={false}>
