@@ -99,8 +99,7 @@ function ScrollableList({
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
   const rowVirtualizer = useVirtualizer({
-    count: 10,
-    // count: options.length,
+    count: options.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 40, // px per row, adjust as needed
     overscan: 5,
