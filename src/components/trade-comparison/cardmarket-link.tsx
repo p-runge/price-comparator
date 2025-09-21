@@ -9,7 +9,7 @@ export default function CardmarketLink({ card }: { card: TradeCard }) {
   url.pathname += `/${cardData.set.replaceAll(" ", "-")}/${cardData.name.replaceAll(
     " ",
     "-",
-  )}-${card.id.toUpperCase()}`;
+  )}`;
   url.searchParams.append("language", card.language);
   if (card.condition !== "7") {
     url.searchParams.append("minCondition", card.condition);
