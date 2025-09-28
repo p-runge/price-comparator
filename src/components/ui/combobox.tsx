@@ -3,6 +3,7 @@
 import { Check, ChevronsUpDown } from "lucide-react";
 
 import { useVirtualizer } from "@tanstack/react-virtual";
+import * as levenshtein from "fastest-levenshtein";
 import { useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
@@ -74,12 +75,14 @@ function ScrollableList({
   onSelect: (option: ComboboxOption) => void;
 }) {
   const [searchValue, setSearchValue] = useState("");
-  const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchValue.toLowerCase()),
-  );
+  const filteredOptions = filterOptions(
+    options.map((opt) => opt.label),
+    searchValue,
+  )
+    .map((label) => options.find((opt) => opt.label === label)!)
+    .filter(Boolean);
 
   const parentRef = useRef<HTMLDivElement>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
   const rowVirtualizer = useVirtualizer({
     count: filteredOptions.length,
     getScrollElement: () => parentRef.current,
@@ -100,15 +103,11 @@ function ScrollableList({
           <div
             className="relative"
             style={{
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
               height: `${rowVirtualizer.getTotalSize()}px`,
             }}
           >
-            {/* eslint-disable-next-line @typescript-eslint/no-unsafe-call */}
             {rowVirtualizer
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
               .getVirtualItems()
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
               .map(
                 (virtualRow: {
                   index: number;
@@ -162,4 +161,50 @@ function ScrollableList({
       </CommandList>
     </Command>
   );
+}
+
+function filterOptions(options: string[], query: string): string[] {
+  if (!query.trim()) return options;
+
+  const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
+
+  // For each option, check if all tokens match something
+  const results = options
+    .map((option) => {
+      const textFields = option.toLowerCase().split(/\s+/).filter(Boolean);
+
+      // Each token must match at least one field
+      let score = 0;
+      const matchesAll = tokens.every((token) => {
+        const bestMatch = textFields
+          .map((field) => ({
+            dist: levenshtein.distance(token, field.slice(0, token.length)), // prefix tolerance
+            field,
+          }))
+          .sort((a, b) => a.dist - b.dist)[0];
+        if (!bestMatch) return false;
+
+        if (bestMatch.dist <= 2 || bestMatch.field.includes(token)) {
+          score += Math.max(0, token.length - bestMatch.dist);
+          return true;
+        }
+        return false;
+      });
+
+      return matchesAll ? { option, score } : null;
+    })
+    .filter((x): x is { option: string; score: number } => !!x)
+    .sort((a, b) => {
+      const shortA = a.option.split(" ")[0]?.toLowerCase();
+      if (shortA === `[${query.toLowerCase()}]`) return -1;
+
+      const shortB = b.option.split(" ")[0]?.toLowerCase();
+      if (shortB === `[${query.toLowerCase()}]`) return 1;
+
+      // best matches first
+      return b.score - a.score;
+    })
+    .map((x) => x.option);
+
+  return results;
 }
