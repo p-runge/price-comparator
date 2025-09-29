@@ -40,7 +40,6 @@ export default function TradeParty({
           <TableHeader>
             <TableRow>
               <TableHead>Card Name</TableHead>
-              <TableHead>Card ID</TableHead>
               <TableHead>Variant</TableHead>
               <TableHead>Language</TableHead>
               <TableHead>Condition</TableHead>
@@ -76,7 +75,7 @@ export default function TradeParty({
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={8}>
+              <TableCell colSpan={7}>
                 <div className="flex gap-4">
                   <div>Total Cards: {cards.length}</div>
                   {/* 
