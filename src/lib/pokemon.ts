@@ -9,7 +9,8 @@ export function getCardDataFromShort(short: string) {
 
 // A map containing short, set and name of all pokemon cards
 export const POKEMON_MAP: Record<string, { set: string; name: string }> = {};
-const res = typeof window !== "undefined" && (await fetch("/cards.json"));
+const res =
+  typeof window !== "undefined" && (await fetch("/cards_vintage.json"));
 const cards = (res ? await res.json() : []) as Array<{
   short: string;
   setName: string;
