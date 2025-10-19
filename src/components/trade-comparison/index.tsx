@@ -2,7 +2,7 @@
 
 import { DefaultSettingsProvider } from "~/hooks/default-settings-provider";
 import { TradeProvider, useTrade } from "~/hooks/trade-provider";
-import { SettingsPanel } from "../ui/settings-panel";
+import { SettingsPanel } from "../settings-panel";
 import TradeParty from "./trade-party";
 
 export default function TradeComparison() {
