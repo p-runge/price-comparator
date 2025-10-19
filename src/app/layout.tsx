@@ -1,7 +1,7 @@
 import "~/styles/globals.css";
 
 import { type Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Geist as Font } from "next/font/google";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -9,9 +9,9 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-const geist = Geist({
+const font = Font({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  variable: "--font-default",
 });
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geist.variable} bg-background text-foreground`}
+      className={`${font.variable} bg-background text-foreground`}
     >
       <body>{children}</body>
     </html>
