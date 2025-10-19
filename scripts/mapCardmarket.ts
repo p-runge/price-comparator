@@ -42,12 +42,19 @@ const setMap: Record<string, number> = {
 };
 
 function normalizeName(name: string): string {
-  return name
-    .replace(/♂/g, "[M]") // normalize male symbol
-    .replace(/♀/g, "[F]") // normalize female symbol
-    .replace(/\.(\S)/g, ". $1") // add space behind dot
-    .toLowerCase()
-    .trim();
+  return (
+    name
+      .replace(/♂/g, "[M]") // normalize male symbol
+      .replace(/♀/g, "[F]") // normalize female symbol
+      .replace(/\.(\S)/g, ". $1") // add space behind dot
+      // map greek letters to english equivalents
+      .replace(/α/g, "alpha")
+      .replace(/β/g, "beta")
+      .replace(/γ/g, "gamma")
+      .replace(/δ/g, "delta")
+      .toLowerCase()
+      .trim()
+  );
 }
 
 async function main() {
