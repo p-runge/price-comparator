@@ -74,7 +74,8 @@ async function main() {
     const candidates = catalog.products.filter(
       (p) =>
         p.idExpansion === idExpansion &&
-        p.name.toLowerCase().startsWith(card.cardName.toLowerCase()),
+        (p.name.toLowerCase() === card.cardName.toLowerCase() ||
+          p.name.toLowerCase().startsWith(`${card.cardName.toLowerCase()} [`)),
     );
     console.log("found candidates:", candidates.length);
 
@@ -89,11 +90,18 @@ async function main() {
     );
 
     if (candidates.length > 1) {
-      // TODO: find accurate logic to pick the right one
-      updatedCards.push({
-        ...card,
-        productId: candidates[0]!.idProduct,
-      });
+      // mappingIssues.push({
+      //   card,
+      //   reason: "multiple candidates found",
+      // });
+
+      // TODO: this might not always be the correct way of handling multiple candidates
+      updatedCards.push({ ...card, productId: candidates[0]?.idProduct });
+
+      // remove candidate from further processing
+      catalog.products = catalog.products.filter(
+        (p) => p.idProduct !== candidates[0]?.idProduct,
+      );
       continue;
     }
 
