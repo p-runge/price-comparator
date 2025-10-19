@@ -12,13 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import {
-  CONDITIONS,
-  LANGUAGES,
-  useTrade,
-  VARIANTS,
-  type TradeCard,
-} from "~/hooks/trade-provider";
+import { useDefaultSettings } from "~/hooks/default-settings-provider";
+import { useTrade, type TradeCard } from "~/hooks/trade-provider";
 import CardRow from "./card-row";
 
 export default function TradeParty({
@@ -29,6 +24,7 @@ export default function TradeParty({
   cards: TradeCard[];
 }) {
   const { addCard } = useTrade();
+  const { defaultSettings } = useDefaultSettings();
 
   return (
     <Card className="px-2">
@@ -62,9 +58,9 @@ export default function TradeParty({
                   onClick={() => {
                     addCard(party, {
                       id: "",
-                      variant: VARIANTS[0],
-                      language: LANGUAGES[0],
-                      condition: CONDITIONS[1],
+                      variant: defaultSettings.variant,
+                      language: defaultSettings.language,
+                      condition: defaultSettings.condition,
                     });
                   }}
                 >

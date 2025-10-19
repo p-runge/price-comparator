@@ -1,12 +1,19 @@
 "use client";
 
+import { DefaultSettingsProvider } from "~/hooks/default-settings-provider";
 import { TradeProvider, useTrade } from "~/hooks/trade-provider";
+import { SettingsPanel } from "../ui/settings-panel";
 import TradeParty from "./trade-party";
 
 export default function TradeComparison() {
   return (
     <TradeProvider>
-      <TradeComparisonContent />
+      <DefaultSettingsProvider>
+        <div className="mb-3">
+          <SettingsPanel />
+        </div>
+        <TradeComparisonContent />
+      </DefaultSettingsProvider>
     </TradeProvider>
   );
 }
