@@ -324,6 +324,12 @@
     "productId": 273749
   },
   {
+    "short": "bs55",
+    "setName": "Base Set",
+    "cardName": "Nidoran ♂",
+    "productId": 273750
+  },
+  {
     "short": "bs56",
     "setName": "Base Set",
     "cardName": "Onix",
@@ -2170,6 +2176,12 @@
     "setName": "Base Set 2",
     "cardName": "Nidoran ♀",
     "productId": 274005
+  },
+  {
+    "short": "b283",
+    "setName": "Base Set 2",
+    "cardName": "Nidoran ♂",
+    "productId": 274006
   },
   {
     "short": "b284",
@@ -4186,6 +4198,18 @@
     "setName": "Gym Challenge",
     "cardName": "Giovanni's Meowth",
     "productId": 274342
+  },
+  {
+    "short": "g275",
+    "setName": "Gym Challenge",
+    "cardName": "Giovanni's Nidoran ♀",
+    "productId": 274343
+  },
+  {
+    "short": "g276",
+    "setName": "Gym Challenge",
+    "cardName": "Giovanni's Nidoran ♂",
+    "productId": 274344
   },
   {
     "short": "g277",
@@ -7308,6 +7332,12 @@
     "productId": 274847
   },
   {
+    "short": "lc83",
+    "setName": "Legendary Collection",
+    "cardName": "Nidoran ♂",
+    "productId": 274848
+  },
+  {
     "short": "lc84",
     "setName": "Legendary Collection",
     "cardName": "Onix",
@@ -10084,6 +10114,18 @@
     "setName": "Skyridge",
     "cardName": "Natu",
     "productId": 275338
+  },
+  {
+    "short": "sk81",
+    "setName": "Skyridge",
+    "cardName": "Nidoran ♀",
+    "productId": 275339
+  },
+  {
+    "short": "sk82",
+    "setName": "Skyridge",
+    "cardName": "Nidoran ♀",
+    "productId": 275340
   },
   {
     "short": "sk83",

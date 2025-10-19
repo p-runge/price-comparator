@@ -41,6 +41,14 @@ const setMap: Record<string, number> = {
   ["Skyridge"]: 1538,
 };
 
+function normalizeName(name: string): string {
+  return name
+    .replace(/♂/g, "[M]") // normalize male symbol
+    .replace(/♀/g, "[F]") // normalize female symbol
+    .toLowerCase()
+    .trim();
+}
+
 async function main() {
   const myCardsPath = path.resolve("public/cards_vintage.json");
   const cardmarketPath = path.resolve(".tmp/cardmarket_products.json");
@@ -54,40 +62,27 @@ async function main() {
   const updatedCards: ResultCard[] = [];
   const mappingIssues: MappingIssue[] = [];
 
-  let count = 0;
   for (const card of myCards) {
-    count++;
-    console.log(
-      `Processing card: ${count}/${myCards.length} ${card.cardName} [${card.setName}]`,
-    );
-    console.log("-------------------------");
-    console.log("card", card);
-
     const idExpansion = setMap[card.setName]; // e.g. 1523 for "Base Set"
     if (!idExpansion) {
       mappingIssues.push({ card, reason: "unknown set name" });
       updatedCards.push({ ...card });
       continue;
     }
-    console.log("exp", card.setName, "->", idExpansion);
 
-    const candidates = catalog.products.filter(
-      (p) =>
+    const candidates = catalog.products.filter((p) => {
+      return (
         p.idExpansion === idExpansion &&
-        (p.name.toLowerCase() === card.cardName.toLowerCase() ||
-          p.name.toLowerCase().startsWith(`${card.cardName.toLowerCase()} [`)),
-    );
-    console.log("found candidates:", candidates.length);
+        (normalizeName(p.name) === normalizeName(card.cardName) ||
+          normalizeName(p.name).startsWith(`${normalizeName(card.cardName)} [`))
+      );
+    });
 
     if (candidates.length === 0) {
       mappingIssues.push({ card, reason: "card name not found" });
       // updatedCards.push({ ...card });
       continue;
     }
-    console.log(
-      "candidates:",
-      candidates.map((x) => x.idProduct),
-    );
 
     if (candidates.length > 1) {
       // mappingIssues.push({
