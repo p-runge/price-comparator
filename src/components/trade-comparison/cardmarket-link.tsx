@@ -1,15 +1,12 @@
 import type { TradeCard } from "~/hooks/trade-provider";
-import { getCardDataFromShort } from "~/lib/pokemon";
+import { POKEMON_MAP } from "~/lib/pokemon";
 
 export default function CardmarketLink({ card }: { card: TradeCard }) {
-  const cardData = getCardDataFromShort(card.id);
-  if (!cardData) return null;
+  const productId = POKEMON_MAP[card.id]?.productId;
 
-  const url = new URL("https://www.cardmarket.com/en/Pokemon/Products/Singles");
-  url.pathname += `/${cardData.set.replaceAll(" ", "-")}/${cardData.name.replaceAll(
-    " ",
-    "-",
-  )}`;
+  const url = new URL(
+    `https://www.cardmarket.com/en/Pokemon/Products?idProduct=${productId}`,
+  );
   url.searchParams.append("language", card.language);
   if (card.condition !== "7") {
     url.searchParams.append("minCondition", card.condition);
