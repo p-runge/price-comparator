@@ -45,6 +45,7 @@ function normalizeName(name: string): string {
   return name
     .replace(/♂/g, "[M]") // normalize male symbol
     .replace(/♀/g, "[F]") // normalize female symbol
+    .replace(/\.(\S)/g, ". $1") // add space behind dot
     .toLowerCase()
     .trim();
 }
